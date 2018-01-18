@@ -6,11 +6,11 @@ var Movie = require('./models/movie')
 var path = require('path')
 var port = process.env.PORT || 3000
 var app = express()
-mongoose.connect('mongodb://localhost/imooc')
+mongoose.connect('mongodb://localhost/imooc',{useMongoClient:true})
 app.set('views','./views/pages')
 app.set('view engine','ejs')
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname,'bower_components')))
+app.use(express.static(path.join(__dirname,'public')))
 app.listen(port)
 console.log('imooc started on port'+ port )
 
@@ -44,17 +44,17 @@ app.get('/movie/:id',function (req,res) {
 //admin page后台录入
 app.get('/admin/movie',function (req,res) {
     res.render('admin',{
-        title:'后台录入'
-        // movie:{
-        //     title:'',
-        //     doctor:'',
-        //     country:'',
-        //     year:'',
-        //     poster:'',
-        //     flash:'',
-        //     summary:'',
-        //     language:''
-        // }
+        title:'后台录入',
+        movie:{
+            title:'',
+            doctor:'',
+            country:'',
+            year:'',
+            poster:'',
+            flash:'',
+            summary:'',
+            language:''
+        }
     })
 })
 
@@ -79,17 +79,18 @@ app.get('/admin/update/:id',function(req,res){
 //admin post movie
 //保存
 app.post('/admin/movie/new',function (req,res) {
-    var id = req.body._id
+    var id = req.body.id
     var movieObj = req.body
     var _movie
+    if(id !== ''){
 
-
-    if(id !== undefined){
         Movie.findById(id,function (err,movie) {
             if(err){
                 console.log(err)
             }
+
             _movie = _.extend(movie,movieObj)
+
             _movie.save(function (err,move) {
                 if(err){
                     console.log(err)
@@ -100,7 +101,16 @@ app.post('/admin/movie/new',function (req,res) {
         })
     }
     else {
-        _movie = new Movie(movieObj)
+        _movie = new Movie({
+            title:movieObj.title,
+            doctor:movieObj.doctor,
+            country:movieObj.country,
+            year:movieObj.year,
+            poster:movieObj.poster,
+            flash:movieObj.flash,
+            summary:movieObj.summary,
+            language:movieObj.language
+        })
         _movie.save(function(err,movie){
              if(err){
                     console.log(err)
@@ -128,6 +138,16 @@ app.get('/admin/list',function (req,res) {
         movies:movies
     })
     })
+})
 
-   
+//list delete movie
+
+app.delete('/admin/list',function (req,res) {
+    var id = req.query.id
+    if(id){
+        Movie.remove({_id:id},function (err,movie) {
+            if(err) return console.log(err)
+            res.json({success:1})
+        })
+    }
 })
