@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+    <%- include("../includes/head.ejs") %>
+
+</head>
+<body>
+
+
+
+
+<div class="container">
+<table class="table table-bordered">
+
+  <tr>
+    <th>名字</th>
+    <th>语言</th>
+    <th>国家</th>
+    <th>上市时间</th>
+    <th>查看</th>
+    <th>修改</th>
+    <th>删除</th>
+  </tr>
+  <%for(var i=0;i<movies.length;i++){%>
+
+  <tr class="item-id-<%= movies[i]._id %>">
+    <td><%= movies[i].title %></td>
+    <td><%= movies[i].language %></td>
+    <td><%= movies[i].country %></td>
+    <td><%= movies[i].year %></td>
+    <td> <a href="/movie/<%= movies[i]._id %>">查看</a> </td>
+    <td> <a href="/admin/update/<%= movies[i]._id %>">更新</a> </td>
+    <td> <button class="btn btn-danger del" data-id="<%= movies[i]._id %>">删除</button> </td>
+  </tr>
+
+  <%}%>
+
+</table>
+
+</div>
+<script type="text/javascript" src="/js/admin.js"></script>
+
+</body>
+</html>
